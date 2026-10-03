@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# uv
+.uv/
+
+# Editor
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Transcripts & sessions (sensitive!)
+transcripts/
+sessions/
+*.wav
+*.mp3
+*.m4a
+*.flac
+
+# Local config
+.env
+config.local.toml
+
+# Models cache
+.cache/
+models/

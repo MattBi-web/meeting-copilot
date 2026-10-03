@@ -1,0 +1,83 @@
+[project]
+name = "meeting-copilot"
+version = "0.1.0"
+description = "Local-first, real-time meeting copilot for macOS: live transcription + hybrid RAG + episodic memory, with a local/cloud LLM provider abstraction."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Matteo Bigi" }]
+license = { text = "MIT" }
+
+dependencies = [
+  # Audio I/O
+  "sounddevice>=0.4.6",
+  "soundfile>=0.12.1",
+  "numpy>=1.26",
+
+  # VAD
+  "silero-vad>=5.1",
+  "torch>=2.2",       # required by silero-vad
+
+  # STT — mlx-whisper (Apple Silicon GPU/Neural Engine via MLX framework).
+  # faster-whisper is the fallback for non-Apple-Silicon machines.
+  "mlx-whisper>=0.4.0; platform_machine == 'arm64' and sys_platform == 'darwin'",
+  "faster-whisper>=1.0.3",
+
+  # Utilities
+  "rich>=13.7",       # nicer console output
+  "python-dotenv>=1.0",
+  "typer>=0.12",      # CLI for `meeting-copilot kb ...`
+
+  # RAG / Knowledge base
+  "chromadb>=0.5",
+  "ollama>=0.3",
+  "sentence-transformers>=3.0",  # cross-encoder reranker, shares torch already installed
+  "bm25s>=0.2",                  # sparse (BM25) retrieval for hybrid search
+
+  # Document parsers for the knowledge base
+  "pypdf>=4.0",
+  "python-docx>=1.1",
+  "python-pptx>=1.0",
+  "openpyxl>=3.1",
+  "trafilatura>=1.12",   # URL -> clean text
+  "markdown-it-py>=3.0",
+]
+
+[project.optional-dependencies]
+# Overlay UI: PyQt6 + PyObjC bridge (macOS)
+ui = [
+  "PyQt6>=6.7",
+  "pyobjc-core>=10.0",
+  "pyobjc-framework-Cocoa>=10.0",
+  "pyobjc-framework-Quartz>=10.0",
+]
+
+# MCP server (Claude Desktop / any MCP client)
+mcp = [
+  "mcp[cli]>=1.2",
+]
+
+# Windows audio loopback fallback backend
+win = [
+  "soundcard>=0.4; sys_platform == 'win32'",
+]
+
+# LanceDB Arrow-based vector store (3-5x faster than ChromaDB for this workload)
+lancedb = [
+  "lancedb>=0.13",
+  "pyarrow>=17.0",
+]
+
+# Microsoft MarkItDown layout-aware document parser
+markitdown = [
+  "markitdown[all]>=0.0.1a4",
+]
+
+[project.scripts]
+meeting-copilot = "meeting_copilot.main:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/meeting_copilot"]
